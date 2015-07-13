@@ -1,0 +1,121 @@
+<html>
+<head>
+	<title>Click The Fast Ball`</title>
+</head>
+<body onkeydown="keyDown(event)"
+      style="background-color:Tan">
+	<canvas width="1000" height="640" id="paper" style="border:5px solid Red">
+</canvas>
+    <div style="float:right; text-align:center;">
+	<p>
+    <font face="Rockwell Condensed" color="Red" style="font-size:30px">SCORE : </font>
+    <font id="score" face="Rockwell Condensed" color="black" style="font-size:30px">S</font>
+    </p>
+    <font face="Rockwell Condensed" color="Red" style="font-size:30px">TIME : </font>
+    <font id="time" face="Rockwell Condensed" color="Black" style="font-size:30px">-</font> 
+    </p>
+    <font face="Rockwell Condensed" color="Red" style="font-size:30px">If frame Red : Color Red</font>
+    </p>
+    <font face="Rockwell Condensed" color="Blue" style="font-size:30px">If frame Blue : Color Blue</font>
+    </p>
+    <font face="Rockwell Condensed" color="green" style="font-size:30px">If frame green : Color green</font>
+    </p>
+    <font face="Rockwell Condensed" color="black" style="font-size:30px">If frame black : Color black</font>
+    </div>
+    </canvas>
+</body>
+	<script type="text/javascript">
+		function keyDown(event){
+			if(event.keyCode == 78){
+				makeNewSprite();
+			}
+			console.log(event.keyCode);	
+		}
+		var canvas = document.getElementById("paper");
+		var sprites =  [];		
+		var colors = ['red', 'blue', 'green', 'Black'];
+		var lastStamp = 0;
+		var gamecolor = colors[random(colors.length)];
+		console.log(gamecolor);
+		var score = 0;
+		console.log(score)
+		canvas.style.borderColor = gamecolor;
+		function makeNewSprite(){
+			sprites.push({
+				x: random(canvas.width - 5, 1),
+				y: random(canvas.height - 5, 1),
+				size: random(20, 10),
+				color: colors[random(colors.length)],
+				v: random(100, 50),
+				heading: random(360, 0) });
+		}
+		var T = 0;
+        document.getElementById("time").innerHTML = "-";
+        setInterval(function(){
+        document.getElementById("time").innerHTML = (T += 1);
+        },1000);
+		function move(s,ms){
+		var distance = s.v * ms / 1000;
+			if(s.x + s.size >= canvas.width ){
+				s.heading = s.heading + 90
+            }
+			else if (s.y + s.size > canvas.height){
+				s.heading = s.heading + 90 
+			}
+			else if(s.x  < s.size  ){
+				s.heading = s.heading - 90
+			}
+			else if (s.y  < s.size){
+				s.heading = s.heading - 90
+			}
+			var degree = Math.PI * s.heading / 180;
+			s.x += Math.cos(degree) * distance;
+			s.y += Math.sin(degree) * distance;
+		}
+		function draw(){
+			var currentStamp = new Date().getTime();
+			if(lastStamp != 0){
+                 var ms = currentStamp - lastStamp;
+            for(var i = 0; i <sprites.length; i++){
+				var s = sprites[i];
+				move(s, ms);
+			}
+		}		
+			var context = canvas.getContext('2d');
+			context.clearRect(0, 0, canvas.width, canvas.height);	
+			for(var i = 0; i < sprites.length; i++){
+				var s = sprites[i];
+				context.fillStyle = s.color;
+				context.fillRect(s.x, s.y, s.size, s.size);
+			}
+			lastStamp = currentStamp;
+			window.requestAnimationFrame(draw);
+		}
+		window.requestAnimationFrame(draw);
+		function random(to, from){
+			from = from || 0
+			return Math.floor((Math.random() * to) + from);
+		}
+        document.getElementById("score").innerHTML = score;
+		function onClick(x, y){
+			for(var i = 0;i < sprites.length;i++){
+				if(x > sprites[i].x && x < sprites[i].x + sprites[i].size && y > sprites[i].y && y < sprites[i].y + sprites[i].size){
+					console.log("hit")
+					if(gamecolor == sprites[i].color){
+						console.log("hitt");
+						score = score + 1;
+					}else{
+                        score = score - 1;
+					}
+					sprites.splice(i,1)
+				}
+			}
+		}
+		canvas.addEventListener('mousedown', function(evt) {
+	        var rect = canvas.getBoundingClientRect();
+	        var x = evt.clientX - rect.left;
+	        var y = evt.clientY - rect.top;	 
+	        onClick(x, y);
+      	}, false);
+	</script>
+</html>
