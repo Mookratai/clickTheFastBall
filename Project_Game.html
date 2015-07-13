@@ -97,6 +97,9 @@
 			return Math.floor((Math.random() * to) + from);
 		}
         document.getElementById("score").innerHTML = score;
+        setInterval(function(){
+        document.getElementById("score").innerHTML = (score);
+        },1000);
 		function onClick(x, y){
 			for(var i = 0;i < sprites.length;i++){
 				if(x > sprites[i].x && x < sprites[i].x + sprites[i].size && y > sprites[i].y && y < sprites[i].y + sprites[i].size){
